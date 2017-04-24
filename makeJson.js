@@ -14,36 +14,7 @@ var json = {
 var affiliations = [];
 var nodeNames = [];
 
-for(var i = 0; i < 6; i++)
-{
-	var col;
-	switch (i)
-	{
-		case 0:
-			col = "A";
-			break;
-		case 1:
-			col = "G";
-			break;
-		case 2:
-			col = "H";
-			break;
-		case 3:
-			col = "I";
-			break;
-		case 4:
-			col = "J";
-			break;
-		case 5:
-			col = "K";
-			break;
-		default:
-			col = "A";
-			break;
-	}
-	
-}
-
+//loop through first column (people that posted) and add their affiliations to the affiliations array
 var lastRow = 2;
 while(true)
 {
@@ -54,6 +25,7 @@ while(true)
 		{
 			affiliations[cell.v] = worksheet1["B" + lastRow].v;
 		}
+		addToJSON(cell.v, true);
 	}
 	else
 	{
@@ -62,6 +34,7 @@ while(true)
 	lastRow++;
 }
 
+//loop through tag columns and add those people to the affiliations array
 for(var i = 0; i < 5; i++)
 {
 	var col;
@@ -102,39 +75,45 @@ for(var i = 0; i < 5; i++)
 					affiliations[cell.v] = "None"
 				}
 			}
+			addToJSON(cell.v, false);
+			var fromNode = worksheet1["A" + j];
+			if(fromNode.v)
+			{
+				json.edges.push({source:fromNode.v, target: cell.v, id: col + j, type: "arrow", color:"rgb(0,0,0)"});
+			}
+			else{
+				console.log("error on row " + i);
+			}
 		}
 	}
 }
 
-
-
-console.log(affiliations);
-i = 1;
-while(true)
-{
-	var leftCell = worksheet["A" + i];
-	var rightCell = worksheet["B" + i];
-	if(leftCell && rightCell)
-	{
-		var fromNode = leftCell.v;
-		var toNode = rightCell.v;
-		addToJSON(fromNode);
-		addToJSON(toNode);
-		json.edges.push({source:fromNode, target: toNode, id: "" + i, type: "arrow", color:"rgb(0,0,0)"});
-	}
-	else
-	{
-		break;
-	}
-	i++;
-}
+// i = 1;
+// while(true)
+// {
+	// var leftCell = worksheet["A" + i];
+	// var rightCell = worksheet["B" + i];
+	// if(leftCell && rightCell)
+	// {
+		// var fromNode = leftCell.v;
+		// var toNode = rightCell.v;
+		// addToJSON(fromNode, true);
+		// addToJSON(toNode, false);
+		// json.edges.push({source:fromNode, target: toNode, id: "" + i, type: "arrow", color:"rgb(0,0,0)"});
+	// }
+	// else
+	// {
+		// break;
+	// }
+	// i++;
+// }
 
 jsonfile.writeFile(fileName, json, function(err)
 {
-	console.error(err);
+	//console.error(err);
 });
 
-function addToJSON(item)
+function addToJSON(item, isFromNode)
 {		
 	if (!nodeNames.includes(item))
 	{
@@ -171,6 +150,7 @@ function addToJSON(item)
 				console.log("--" + affiliations[item]);
 				break;
 		}
-		json.nodes.push({label: item, id: item, x: xcoord, y: ycoord, size:2, color: color});
+		var size = isFromNode ? 3 : 2;
+		json.nodes.push({label: item, id: item, x: xcoord, y: ycoord, size:size, color: color});
 	}
 }
