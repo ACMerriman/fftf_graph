@@ -1,0 +1,50 @@
+<head>
+</head>
+<body>
+<script>
+var AXDPAGE = "https://www.facebook.com/sigmachirit/photos/a.541494415929268.1073741840.102788039799910/1343050009107034/?type=3"
+var ASAPAGE = "https://www.facebook.com/sigmachirit/photos/a.541494415929268.1073741840.102788039799910/1343050015773700/?type=3"
+var DPEPAGE = "https://www.facebook.com/sigmachirit/photos/a.541494415929268.1073741840.102788039799910/1343050019107033/?type=3"
+var ZTAPAGE = "https://www.facebook.com/sigmachirit/photos/a.541494415929268.1073741840.102788039799910/1343050012440367/?type=3"
+var SSSPAGE = "https://www.facebook.com/sigmachirit/photos/a.541494415929268.1073741840.102788039799910/1343050065773695/?type=3"
+
+function makeHttpObject() {
+  try {return new XMLHttpRequest();}
+  catch (error) {}
+  try {return new ActiveXObject("Msxml2.XMLHTTP");}
+  catch (error) {}
+  try {return new ActiveXObject("Microsoft.XMLHTTP");}
+  catch (error) {}
+
+  throw new Error("Could not create HTTP request object.");
+}
+
+function getLikes(url, id)
+{
+	var request = makeHttpObject();
+	request.open("GET", url, true);
+	request.send(null);
+	request.onreadystatechange = function() {
+		
+		if (request.readyState == 4)
+		{
+			var data = request.responseText;
+			var likeIndex = data.indexOf("likecount:") + 10;
+			var likes = parseInt(data.substring(likeIndex, likeIndex + data.substring(likeIndex).indexOf(",")));
+			document.getElementById(id).innerHTML = likes;
+		}
+	};
+}
+
+getLikes(AXDPAGE, "axd");
+getLikes(ASAPAGE, "asa");
+getLikes(DPEPAGE, "dpe");
+getLikes(ZTAPAGE, "zta");
+getLikes(SSSPAGE, "sss");
+</script>
+<p>Alpha Xi Delta Total Likes: <span id="axd"></span></p>
+<p>Alpha Sigma Alpha Total Likes: <span id="asa"></span></p>
+<p>Delta Phi Epsilon Total Likes: <span id="dpe"></span></p>
+<p>Zeta Tau Alpha Total Likes: <span id="zta"></span></p>
+<p>Sigma Sigma Sigma Total Likes: <span id="sss"></span></p>
+</body>
